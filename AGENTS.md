@@ -88,3 +88,16 @@ dotnet test --collect:"XPlat Code Coverage"
 - `docs/multi-tenancy.md` — Tenant resolution flow, dual-mode strategy
 - `docs/tech-stack.md` — Full stack table, theming approach
 - `docs/decisions/ADR-001-multi-tenancy-strategy.md` — ADR for tenancy
+
+## Commit Message Convention
+Follow Conventional Commits: `<type>(<scope>): <subject>`
+- **Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `build`, `ci`
+- **Scope**: project/component affected (e.g., `web`, `core`, `appHost`, `infra`)
+- **Subject**: Imperative mood, lowercase, no period, ≤50 chars
+- **Body**: Explain *what* and *why* (not *how*), wrap at 72 chars
+- **Match scope to changes**: Message must accurately reflect all modified files
+
+Examples:
+- `feat(web): add tenant resolution middleware`
+- `fix(appHost): enable OTLP exporter for Aspire dashboard`
+- `docs(architecture): add C4 component diagram`
