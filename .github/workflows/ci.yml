@@ -28,7 +28,7 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Test
-        run: dotnet test --no-restore --configuration Release --collect:"XPlat Code Coverage"
+        run: dotnet test --no-restore --configuration Release --collect:"XPlat Code Coverage" --logger "trx;LogFileName=test-results.trx"
 
       - name: Upload coverage
         uses: actions/upload-artifact@v4
@@ -36,3 +36,10 @@ jobs:
         with:
           name: coverage
           path: tests/**/TestResults/**/coverage.cobertura.xml
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: tests/**/TestResults/**/*.trx
