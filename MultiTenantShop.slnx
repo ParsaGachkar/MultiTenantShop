@@ -1,2 +1,9 @@
 <Solution>
+  <Project Path="src\Core\MultiTenantShop.Core.csproj" />
+  <Project Path="src\Infrastructure\MultiTenantShop.Infrastructure.csproj" />
+  <Project Path="src\AppHost/MultiTenantShop.AppHost.csproj" />
+  <Project Path="src\Application\MultiTenantShop.Application.csproj" />
+  <Project Path="src\Web\MultiTenantShop.Web\MultiTenantShop.Web.csproj" />
+  <Project Path="src\ServiceDefaults\MultiTenantShop.ServiceDefaults.csproj" />
+  <Project Path="tests\MultiTenantShop.Tests.csproj" />
 </Solution>
