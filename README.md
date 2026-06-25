@@ -20,7 +20,7 @@ A multi-tenant e-commerce platform where each tenant is a **shop owner** who man
 | Database | LiteDB (local dev) / MongoDB (production) — switchable via `DatabaseProvider` env var | ✅ Decided |
 | Deployment model | Single deployment + multi-tenant routing | ✅ Decided |
 | Payment provider | ZarinPal | ✅ Decided |
-| Architecture style | Clean Architecture / Vertical Slices / Modular Monolith | 🔴 Open |
+| Architecture style | Clean Architecture + Vertical Slices + Modular Monolith | ✅ Decided |
 
 **Initial architecture proposal:**
 
