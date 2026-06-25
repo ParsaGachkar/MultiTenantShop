@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\src\Application\MultiTenantShop.Application.csproj" />
+    <ProjectReference Include="..\src\Core\MultiTenantShop.Core.csproj" />
     <ProjectReference Include="..\src\Web\MultiTenantShop.Web\MultiTenantShop.Web.csproj" />
   </ItemGroup>
 

@@ -76,6 +76,7 @@ dotnet test --collect:"XPlat Code Coverage"
 - **Target Framework**: `net10.0` everywhere
 - **Package References**: Centralized in `Directory.Packages.props` (not yet created — use csproj for now)
 - **No `Program.cs` in Core/Application/Infrastructure** — they're class libraries
+- **Primary Keys**: Always ULID (via `Ulid.NewUlid().ToString()`). Never `Guid`, never `int`. The `Ulid` NuGet package is referenced in Core. Use `Ulid.NewUlid().ToString()` for all entity ID generation.
 
 ## Common Pitfalls
 - **Empty projects**: Core, Application, Infrastructure have only csproj files. Implementation goes there.
