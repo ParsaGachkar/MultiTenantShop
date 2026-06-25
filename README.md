@@ -18,7 +18,7 @@ A multi-tenant e-commerce platform where each tenant is a **shop owner** who man
 | Tenant isolation level | Shared DB (default), DB-per-tenant opt-in via env var | ✅ Decided |
 | Frontend | Blazor Web App | ✅ Decided |
 | Database | LiteDB (local dev) / MongoDB (production) — switchable via `DatabaseProvider` env var | ✅ Decided |
-| Deployment model | Single deploy + tenant routing / per-tenant deployments | 🔴 Open |
+| Deployment model | Single deployment + multi-tenant routing | ✅ Decided |
 | Payment provider | ZarinPal | ✅ Decided |
 | Architecture style | Clean Architecture / Vertical Slices / Modular Monolith | 🔴 Open |
 
@@ -27,7 +27,7 @@ A multi-tenant e-commerce platform where each tenant is a **shop owner** who man
 ```
 MultiTenantShop/
 ├── Core/                    # Domain models, shared kernel
-├── Infrastructure/          # EF Core, tenant providers, payments
+├── Infrastructure/          # LiteDB/MongoDB, tenant providers, payments
 ├── Application/             # CQRS handlers, DTOs, validation
 ├── Web/                     # API + tenant resolution middleware
 └── Tests/
