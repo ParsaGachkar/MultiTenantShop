@@ -9,6 +9,7 @@ erDiagram
     Tenant ||--o{ Product : "owns"
     Tenant ||--o{ Order : "owns"
     Tenant ||--o{ Customer : "owns"
+    Tenant ||--o{ Coupon : "owns"
     Tenant {
         ulid TenantId PK
         string Name
@@ -35,7 +36,7 @@ erDiagram
     Product ||--o{ OrderItem : "contains"
     Product ||--o{ CartItem : "contains"
     Product ||--o{ ProductVariant : "has"
-    Product ||--o{ ProductPrice : "priced in"
+    Product ||--o{ InventoryMovement : "tracks"
     Product {
         ulid ProductId PK
         ulid TenantId
@@ -45,6 +46,7 @@ erDiagram
         string ImageUrl
         string SKU
         int StockQuantity
+        int LowStockThreshold
         bool IsActive
         datetime CreatedAt
     }
@@ -58,10 +60,15 @@ erDiagram
         int StockQuantity
     }
 
-    ProductPrice {
+    InventoryMovement {
+        ulid MovementId PK
         ulid ProductId
-        decimal Amount
-        string Currency
+        ulid VariantId
+        int Quantity
+        string Reason
+        string ReferenceId
+        string Note
+        datetime CreatedAt
     }
 
     Cart ||--o{ CartItem : "contains"
@@ -82,8 +89,52 @@ erDiagram
         decimal UnitPrice
     }
 
+    Coupon ||--o{ Order : "applied to"
+    Coupon {
+        ulid CouponId PK
+        ulid TenantId
+        string Code
+        string DiscountType
+        decimal DiscountValue
+        decimal MinOrderAmount
+        int MaxUses
+        int CurrentUses
+        datetime ExpiresAt
+        bool IsActive
+        datetime CreatedAt
+    }
+
+    Customer ||--o{ Order : "places"
+    Customer ||--o{ Cart : "has"
+    Customer ||--o{ CustomerAddress : "has"
+    Customer {
+        ulid CustomerId PK
+        ulid TenantId
+        string Email
+        string FirstName
+        string LastName
+        string Phone
+        datetime CreatedAt
+    }
+
+    CustomerAddress {
+        ulid AddressId PK
+        ulid CustomerId
+        string Label
+        string Province
+        string City
+        string PostalCode
+        string Street
+        string FullText
+        decimal Latitude
+        decimal Longitude
+        bool IsDefault
+    }
+
     Order ||--o{ OrderItem : "contains"
     Order ||--|| Payment : "has"
+    Order ||--o{ Shipment : "has"
+    Order ||--o{ Refund : "has"
     Order {
         ulid OrderId PK
         ulid TenantId
@@ -93,8 +144,10 @@ erDiagram
         decimal SubTotal
         decimal TaxTotal
         decimal ShippingTotal
+        decimal DiscountAmount
         decimal GrandTotal
         string Currency
+        ulid CouponId
         string ShippingAddress
         string BillingAddress
         string CultureName
@@ -114,18 +167,6 @@ erDiagram
         decimal TotalPrice
     }
 
-    Customer ||--o{ Order : "places"
-    Customer ||--o{ Cart : "has"
-    Customer {
-        ulid CustomerId PK
-        ulid TenantId
-        string Email
-        string FirstName
-        string LastName
-        string Phone
-        datetime CreatedAt
-    }
-
     Payment {
         ulid PaymentId PK
         ulid OrderId
@@ -135,6 +176,28 @@ erDiagram
         string Currency
         string Status
         datetime PaidAt
+    }
+
+    Shipment {
+        ulid ShipmentId PK
+        ulid OrderId
+        string Carrier
+        string TrackingCode
+        string Status
+        string ShippingAddress
+        datetime ShippedAt
+        datetime DeliveredAt
+    }
+
+    Refund {
+        ulid RefundId PK
+        ulid OrderId
+        ulid PaymentId
+        string Reason
+        string Status
+        decimal Amount
+        bool Restock
+        datetime CreatedAt
     }
 ```
 
@@ -192,9 +255,10 @@ package "Catalog Context" {
     - Prices: List~Money~
     - Sku: string
     - StockQuantity: int
-    + AdjustStock(int quantity)
+    - LowStockThreshold: int
+    + AdjustStock(int quantity, string reason)
     + GetPrice(string currency): Money
-    + ApplyDiscount(decimal percent)
+    + IsLowStock(): bool
   }
 
   class Money {
@@ -224,6 +288,29 @@ package "Catalog Context" {
   Product *--> "*" Money : prices
 }
 
+package "Inventory Context" {
+  class InventoryMovement {
+    - MovementId: ulid
+    - ProductId: ulid
+    - VariantId: ulid
+    - Quantity: int
+    - Reason: MovementReason
+    - ReferenceId: string
+    - Note: string
+    - CreatedAt: DateTime
+  }
+
+  enum MovementReason {
+    Purchase
+    Sale
+    Adjustment
+    Return
+    Transfer
+  }
+
+  Product "1" --> "*" InventoryMovement
+}
+
 package "Order Context" {
   class Order {
     - OrderId: ulid
@@ -231,8 +318,11 @@ package "Order Context" {
     - OrderNumber: string
     - Status: OrderStatus
     - Items: List~OrderItem~
+    - DiscountAmount: Money
+    - CouponId: ulid
     + AddItem(Product, int)
     + CalculateTotal(): Money
+    + ApplyCoupon(Coupon): DiscountResult
     + Submit()
     + Cancel()
   }
@@ -284,6 +374,30 @@ package "Payment Context" {
   Payment *--> Money
 }
 
+package "Promotion Context" {
+  class Coupon {
+    - CouponId: ulid
+    - TenantId: ulid
+    - Code: string
+    - DiscountType: DiscountType
+    - DiscountValue: decimal
+    - MinOrderAmount: Money
+    - MaxUses: int
+    - CurrentUses: int
+    - ExpiresAt: DateTime
+    - IsActive: bool
+    + CanApply(Order): bool
+    + CalculateDiscount(Order): Money
+  }
+
+  enum DiscountType {
+    Percentage
+    Fixed
+  }
+
+  Coupon ..|> ITenantScoped
+}
+
 package "Cart Context" {
   class Cart {
     - CartId: ulid
@@ -303,6 +417,78 @@ package "Cart Context" {
 
   Cart "1" --> "*" CartItem
   Cart *--> Money
+}
+
+package "Customer Context" {
+  class Customer {
+    - CustomerId: ulid
+    - TenantId: ulid
+    - Email: string
+    - FirstName: string
+    - LastName: string
+    - Phone: string
+    - Addresses: List~Address~
+    + GetDefaultAddress(): Address
+  }
+
+  class Address {
+    - Label: string
+    - Province: string
+    - City: string
+    - PostalCode: string
+    - Street: string
+    - FullText: string
+    - Latitude: decimal
+    - Longitude: decimal
+    + Format(bool persian): string
+  }
+
+  Customer *--> "*" Address
+  Customer ..|> ITenantScoped
+}
+
+package "Fulfillment Context" {
+  class Shipment {
+    - ShipmentId: ulid
+    - OrderId: ulid
+    - Carrier: string
+    - TrackingCode: string
+    - Status: ShipmentStatus
+    - ShippingAddress: Address
+    - ShippedAt: DateTime
+    - DeliveredAt: DateTime
+  }
+
+  enum ShipmentStatus {
+    Pending
+    PickedUp
+    InTransit
+    Delivered
+    Failed
+  }
+
+  class Refund {
+    - RefundId: ulid
+    - OrderId: ulid
+    - PaymentId: ulid
+    - Reason: string
+    - Status: RefundStatus
+    - Amount: Money
+    - Restock: bool
+    - CreatedAt: DateTime
+  }
+
+  enum RefundStatus {
+    Pending
+    Approved
+    Rejected
+    Completed
+  }
+
+  Order "1" --> "*" Shipment
+  Order "1" --> "*" Refund
+  Shipment *--> Address
+  Refund *--> Money
 }
 
 hide empty members
@@ -373,4 +559,36 @@ sequenceDiagram
     Bus->>SMS: Send SMS notification
     App-->>API: OrderId + status
     API-->>Client: 201 Created
+```
+
+### Refund Flow
+
+```mermaid
+sequenceDiagram
+    participant Admin as Admin Panel
+    participant API as Orders API
+    participant App as Application
+    participant Domain
+    participant Payment as Payment Gateway
+    participant Inventory
+
+    Admin->>API: POST /orders/{id}/refund
+    API->>App: RefundOrderCommand
+    App->>Domain: Create Refund (Pending)
+    App->>Payment: ProcessRefund(paymentId, amount)
+    alt Refund Approved
+        Payment-->>App: RefundSucceeded(txId)
+        App->>Domain: Approve Refund
+        alt Restock Enabled
+            App->>Inventory: AdjustStock(productId, +quantity)
+            App->>Inventory: Record Movement (Return)
+        end
+        App->>Domain: Mark Refund Completed
+        Domain-->>App: OrderStatusChanged(Refunded)
+    else Refund Declined
+        Payment-->>App: RefundFailed(reason)
+        App->>Domain: Reject Refund
+    end
+    App-->>API: RefundResult
+    API-->>Admin: Refund status
 ```
