@@ -1,36 +1,35 @@
 # MultiTenantShop
 
-> Multi-tenant e-commerce platform — SaaS for shop owners, built with .NET.
+> Multi-tenant e-commerce platform — SaaS for shop owners, built with .NET 10 + Blazor.
 
-## 🧠 Brainstorming Sessions
+## Progress
 
-This project is in active design phase. All architectural decisions, trade-offs, and open questions are documented here and in `docs/`.
+- [x] Project scaffold (Clean Architecture + Aspire orchestration)
+- [x] UI design doc (`docs/design.md`)
+- [x] Domain model doc (`docs/domain/model.md`)
+- [x] **Domain entities** — Product, Order, Customer, Cart, Payment, Shipment, Refund, Coupon, etc.
+- [x] **Value objects** — Money, Address
+- [x] **Enums** — OrderStatus, PaymentStatus, ShipmentStatus, RefundStatus, etc.
+- [x] **92 unit tests** — all passing
+- [x] **ULID** primary keys
+- [x] **CI** — GitHub Actions (build + test + coverage + test report)
+- [ ] Tenant resolution middleware
+- [ ] LiteDB persistence
+- [ ] CQRS handlers (Application layer)
+- [ ] API controllers
+- [ ] Admin panel (Blazor SSR)
+- [ ] Storefront layout (tenant-themed)
+- [ ] Auth (ASP.NET Identity + Cookies)
+- [ ] ZarinPal payment integration
+- [ ] Email/SMS notifications
+- [ ] Deployment to production
 
-### Session 1 — Project Kickoff (2026-06-25)
+## Quick Start
 
-**What are we building?**
-A multi-tenant e-commerce platform where each tenant is a **shop owner** who manages their own catalog, processes orders, and accepts payments. End customers browse individual shops (or a marketplace view) and purchase products.
-
-**Key brainstorming questions:**
-
-| Question | Options | Status |
-|---|---|---|
-| Tenant isolation level | Shared DB (default), DB-per-tenant opt-in via env var | ✅ Decided |
-| Frontend | Blazor Web App | ✅ Decided |
-| Database | LiteDB (local dev) / MongoDB (production) — switchable via `DatabaseProvider` env var | ✅ Decided |
-| Deployment model | Single deployment + multi-tenant routing | ✅ Decided |
-| Payment provider | ZarinPal | ✅ Decided |
-| Architecture style | Clean Architecture + Vertical Slices + Modular Monolith | ✅ Decided |
-
-**Initial architecture proposal:**
-
+```bash
+dotnet build
+dotnet test
+dotnet run --project src/AppHost/MultiTenantShop.AppHost.csproj
 ```
-MultiTenantShop/
-├── Core/                    # Domain models, shared kernel
-├── Infrastructure/          # LiteDB/MongoDB, tenant providers, payments
-├── Application/             # CQRS handlers, DTOs, validation
-├── Web/                     # API + tenant resolution middleware
-└── Tests/
-```
 
-See `docs/` for detailed architecture diagrams, domain models, and ADRs.
+See `AGENTS.md` for full developer guide and conventions.
