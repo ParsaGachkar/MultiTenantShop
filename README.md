@@ -2,7 +2,7 @@
 
 > Multi-tenant e-commerce platform — SaaS for shop owners, built with .NET 10 + Blazor.
 
-![CI](https://github.com/anomalyco/MultiTenantShop/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/ParsaGachkar/MultiTenantShop/actions/workflows/ci.yml/badge.svg)
 ![.NET 10](https://img.shields.io/badge/.NET-10-512BD4)
 [![Blazor](https://img.shields.io/badge/Blazor-SSR-512BD4)](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor)
 [![LiteDB](https://img.shields.io/badge/DB-LiteDB%20%2F%20MongoDB-green)](https://www.litedb.org/)
