@@ -130,6 +130,12 @@ public class Order : ITenantScoped
         UpdatedAt = DateTime.UtcNow;
     }
 
+    public void SetStatusForTesting(OrderStatus status)
+    {
+        Status = status;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
     public Money CalculateTotal()
     {
         return new Money(GrandTotal, Currency);

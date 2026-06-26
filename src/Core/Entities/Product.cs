@@ -85,6 +85,7 @@ public class Product : ITenantScoped
 
         var movement = new InventoryMovement(
             Ulid.NewUlid().ToString(),
+            TenantId,
             ProductId,
             null,
             quantity,

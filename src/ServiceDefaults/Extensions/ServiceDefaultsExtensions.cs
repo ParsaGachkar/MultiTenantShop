@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Http.Resilience;
+using MongoDB.Driver;
 using OpenTelemetry;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
@@ -21,8 +22,15 @@ public static class ServiceDefaultsExtensions
             http.AddStandardResilienceHandler();
         });
 
+        var connectionString = configuration["ConnectionStrings:Default"] ?? "mongodb://localhost:27017/multitenantshop";
+        services.AddSingleton<IMongoClient>(new MongoClient(connectionString));
+
         services.AddHealthChecks()
-            .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
+            .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"])
+            .AddMongoDb(
+                sp => sp.GetRequiredService<IMongoClient>(),
+                name: "mongodb",
+                tags: ["ready"]);
 
         services.AddOpenTelemetry()
             .ConfigureResource(resource => resource.AddService(serviceName: "MultiTenantShop"))

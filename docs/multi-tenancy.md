@@ -49,8 +49,8 @@ flowchart TD
 Only two environment variables exist:
 
 ```bash
-DatabaseProvider=LiteDB                          # or MongoDB
-ConnectionStrings__Default=Filename=Data/MultiTenantShop.db
+DatabaseProvider=MongoDB
+ConnectionStrings__Default=mongodb://mongodb:27017/multitenantshop
 ```
 
 The shared DB contains a `Tenants` collection. Each tenant record stores its own optional connection string:
@@ -200,12 +200,12 @@ ITenantScoped <|.. Order
 @enduml
 ```
 
-## Tenant Isolation per Database
+## Tenant Isolation per Database (MongoDB)
 
-| Strategy | LiteDB | MongoDB |
-|---|---|---|
-| **Shared DB** (default) | Single `.db` file, documents include `TenantId` field, queries filter by it | Single database, `TenantId` field on every document |
-| **Per-tenant** (opt-in) | Separate `.db` file per tenant | Separate database per tenant |
+| Strategy | Behavior |
+|---|---|
+| **Shared DB** (default) | Single database, `TenantId` field on every document, queries filter by it |
+| **Per-tenant** (opt-in) | Separate database per tenant, no tenant filter needed |
 
 ## Resolved Questions
 

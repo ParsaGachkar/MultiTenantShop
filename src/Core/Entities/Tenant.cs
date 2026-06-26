@@ -21,7 +21,8 @@ public class Tenant
         string plan,
         string defaultCurrency,
         string defaultLanguage,
-        List<string>? supportedCurrencies = null)
+        List<string>? supportedCurrencies = null,
+        string? connectionString = null)
     {
         TenantId = tenantId;
         Name = name;
@@ -30,6 +31,12 @@ public class Tenant
         DefaultCurrency = defaultCurrency;
         DefaultLanguage = defaultLanguage;
         SupportedCurrencies = supportedCurrencies ?? [defaultCurrency];
+        ConnectionString = connectionString;
         CreatedAt = DateTime.UtcNow;
+    }
+
+    public void SetConnectionString(string? connectionString)
+    {
+        ConnectionString = connectionString;
     }
 }

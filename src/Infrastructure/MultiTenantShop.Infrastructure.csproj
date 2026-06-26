@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Core\MultiTenantShop.Core.csproj" />
+    <PackageReference Include="MongoDB.Driver" />
+    <PackageReference Include="Aspire.MongoDB.Driver" />
   </ItemGroup>
 
 </Project>

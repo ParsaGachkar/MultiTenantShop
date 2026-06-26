@@ -11,9 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.Hosting.AppHost" Version="10.0.0-preview.1" />
-    <PackageReference Include="Aspire.Hosting.Redis" Version="10.0.0-preview.1" />
-    <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="10.0.0-preview.1" />
+    <PackageReference Include="Aspire.Hosting.AppHost" />
+    <PackageReference Include="Aspire.Hosting.MongoDB" />
+    <PackageReference Include="Aspire.Hosting.Redis" />
+    <PackageReference Include="Aspire.Hosting.RabbitMQ" />
     <ProjectReference Include="..\Web\MultiTenantShop.Web\MultiTenantShop.Web.csproj" />
     <ProjectReference Include="..\ServiceDefaults\MultiTenantShop.ServiceDefaults.csproj" IsAspireProjectResource="false" />
   </ItemGroup>

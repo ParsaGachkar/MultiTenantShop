@@ -1,11 +1,13 @@
 using MultiTenantShop.Core.Enums;
+using MultiTenantShop.Core.Interfaces;
 using MultiTenantShop.Core.ValueObjects;
 
 namespace MultiTenantShop.Core.Entities;
 
-public class Payment
+public class Payment : ITenantScoped
 {
     public string PaymentId { get; private set; }
+    public string TenantId { get; private set; }
     public string OrderId { get; private set; }
     public PaymentMethod Method { get; private set; }
     public string? TransactionId { get; private set; }
@@ -15,11 +17,13 @@ public class Payment
 
     public Payment(
         string paymentId,
+        string tenantId,
         string orderId,
         PaymentMethod method,
         Money amount)
     {
         PaymentId = paymentId;
+        TenantId = tenantId;
         OrderId = orderId;
         Method = method;
         Amount = amount;

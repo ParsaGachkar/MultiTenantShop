@@ -9,6 +9,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Core\MultiTenantShop.Core.csproj" />
     <ProjectReference Include="..\Infrastructure\MultiTenantShop.Infrastructure.csproj" />
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
   </ItemGroup>
 
 </Project>
