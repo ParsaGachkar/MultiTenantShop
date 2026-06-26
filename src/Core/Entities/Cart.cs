@@ -1,8 +1,9 @@
+using MultiTenantShop.Core.Interfaces;
 using MultiTenantShop.Core.ValueObjects;
 
 namespace MultiTenantShop.Core.Entities;
 
-public class Cart
+public class Cart : ITenantScoped
 {
     private readonly List<CartItem> _items = [];
 

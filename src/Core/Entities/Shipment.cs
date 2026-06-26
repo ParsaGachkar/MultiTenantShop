@@ -1,11 +1,13 @@
 using MultiTenantShop.Core.Enums;
+using MultiTenantShop.Core.Interfaces;
 using MultiTenantShop.Core.ValueObjects;
 
 namespace MultiTenantShop.Core.Entities;
 
-public class Shipment
+public class Shipment : ITenantScoped
 {
     public string ShipmentId { get; private set; }
+    public string TenantId { get; private set; }
     public string OrderId { get; private set; }
     public string? Carrier { get; private set; }
     public string? TrackingCode { get; private set; }
@@ -14,9 +16,10 @@ public class Shipment
     public DateTime? ShippedAt { get; private set; }
     public DateTime? DeliveredAt { get; private set; }
 
-    public Shipment(string shipmentId, string orderId, Address? shippingAddress = null)
+    public Shipment(string shipmentId, string tenantId, string orderId, Address? shippingAddress = null)
     {
         ShipmentId = shipmentId;
+        TenantId = tenantId;
         OrderId = orderId;
         Status = ShipmentStatus.Pending;
         ShippingAddress = shippingAddress;

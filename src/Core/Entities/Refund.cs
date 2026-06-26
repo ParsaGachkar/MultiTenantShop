@@ -1,11 +1,13 @@
 using MultiTenantShop.Core.Enums;
+using MultiTenantShop.Core.Interfaces;
 using MultiTenantShop.Core.ValueObjects;
 
 namespace MultiTenantShop.Core.Entities;
 
-public class Refund
+public class Refund : ITenantScoped
 {
     public string RefundId { get; private set; }
+    public string TenantId { get; private set; }
     public string OrderId { get; private set; }
     public string PaymentId { get; private set; }
     public string? Reason { get; private set; }
@@ -16,6 +18,7 @@ public class Refund
 
     public Refund(
         string refundId,
+        string tenantId,
         string orderId,
         string paymentId,
         Money amount,
@@ -23,6 +26,7 @@ public class Refund
         bool restock = true)
     {
         RefundId = refundId;
+        TenantId = tenantId;
         OrderId = orderId;
         PaymentId = paymentId;
         Amount = amount;
